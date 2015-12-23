@@ -42,9 +42,33 @@ TreeNode* Tree::parse_A()
 		TreeNode* Concat = new TreeNode(CONCAT, '.', l, r);
 		l = Concat;
 	}
+	return l;
 }
 TreeNode* Tree::parse_B()
 {
 	TreeNode* l = parse_C();
-
+	while (currentChar == '*')
+	{
+		currentChar = getNextChar();
+		TreeNode* r = parse_C();
+		TreeNode* Clo = new TreeNode(CLOSURE, '*', l, nullptr);
+		l = Clo;
+	}
+	return l;
+}
+TreeNode* Tree::parse_C()
+{
+	if (currentChar=='(')
+	{
+		currentChar = getNextChar();
+		TreeNode* l = parse_Exp();
+		getNextChar();
+		currentChar = getNextChar();
+	}
+	if (isalpha(currentChar))
+	{
+		TreeNode* leaf = new TreeNode(CHAR, currentChar, nullptr, nullptr);
+		currentChar = getNextChar();
+		return leaf;
+	}
 }
