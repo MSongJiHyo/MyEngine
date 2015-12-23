@@ -11,9 +11,9 @@ public:
 	char	  getNextChar();
 	TreeNode *ReToTree();
 	TreeNode *parse_Exp();
-	TreeNode *parse_Concat();
-	TreeNode *parse_Alt();
-	TreeNode *parse_Closure();
+	TreeNode *parse_B();
+	TreeNode *parse_A();
+	TreeNode *parse_C();
 
 	Tree(string);
 	
