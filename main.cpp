@@ -6,7 +6,7 @@ using namespace std;
 
 int main(void)
 {
-	Tree::Tree ("(ab)*|c");
+	Tree::Tree ("(a|b)d*|b(dd)");
 	system("pause");
 	return 0;
 }
