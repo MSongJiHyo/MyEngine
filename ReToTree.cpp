@@ -13,22 +13,31 @@ Tree::Tree(string s)
 }
 char Tree::getNextChar()
 {
-	return exp.at(pos++);
+	return exp[pos++];
 	
+}
+char Tree::getBackChar()
+{
+	
+	return exp[pos-2];
+
 }
 TreeNode* Tree::ReToTree()
 {
-	root=Tree::parse_Exp();
-	
+	currentChar = getNextChar();
+	root=Tree::parse_Exp();	
 	return root;
 }
 TreeNode* Tree::parse_Exp()
-{
-	currentChar = getNextChar();
+{	
 	TreeNode* l = parse_A();
+	if (currentChar == '\0')
+	{
+		return l;
+	}
 	while (currentChar == '|')
 	{
-		currentChar = getNextChar();
+		currentChar = getNextChar();		
 		TreeNode* r = parse_A();
 		TreeNode* alt = new TreeNode(ALT, '|', l, r);
 		l = alt;
@@ -38,77 +47,88 @@ TreeNode* Tree::parse_Exp()
 TreeNode* Tree::parse_A()
 {
 	TreeNode* l = parse_B();
-	while (isalpha(currentChar))
-	{		
-		currentChar = getNextChar();
+	if (currentChar == '\0')
+	{
+		return l;
+	}
+	while (isalpha(currentChar)||((currentChar=='(')&&isalpha(getBackChar())))
+	{	
 		TreeNode* r = parse_B();
 		TreeNode* Concat = new TreeNode(CONCAT, '.', l, r);
-		l = Concat;
+		l = Concat;		
 	}
 	return l;
 }
 TreeNode* Tree::parse_B()
 {
 	TreeNode* l = parse_C();
-	while (currentChar == '*')
+	if (currentChar == '\0')
+	{
+		return l;
+	}
+	while(currentChar == '*')
 	{
 		currentChar = getNextChar();
-		TreeNode* r = parse_C();
 		TreeNode* Clo = new TreeNode(CLOSURE, '*', l, nullptr);
+		
 		l = Clo;
 	}
 	return l;
 }
 TreeNode* Tree::parse_C()
 {
+	TreeNode* l = nullptr;
 	if (currentChar=='(')
 	{
-		currentChar = getNextChar();
-		TreeNode* l = parse_Exp();
-		getNextChar();
-		currentChar = getNextChar();
+		currentChar = getNextChar();		
+		l = parse_Exp();
+		currentChar = getNextChar();	
 		return l;
 	}
 	if (isalpha(currentChar))
 	{
 		TreeNode* leaf = new TreeNode(CHAR, currentChar, nullptr, nullptr);
 		currentChar = getNextChar();
+		
 		return leaf;
 	}
 	return nullptr;
 }
 void Tree::Re_print (TreeNode* root)
 {
- 
-  switch (root->nodeKind){
-  case CHAR:{
-    cout<<root->c;
-    break;
-  }
-  case ALT:{
-    cout<<"(";
-    Re_print (root->left);
-    cout<<") | (";
-    Re_print (root->right);
-    cout<<")";
-    break;
-  }
-  case CONCAT:{
-    cout<<"(";
-    Re_print (root->left);
-    cout<<")(";
-    Re_print (root->right);
-	cout<<")";
-    break;
-  }
-  case CLOSURE:{
-    cout<<"(";
-    Re_print (root->left);
-    printf (")*");
-    break;
-  }
-  default:
-    break;
-  }
-  return;
+	switch (root->nodeKind)
+	{
+	case CHAR:
+	{
+		cout << root->c;
+		break;
+	}
+	case ALT:
+	{
+		cout << "(";
+		Re_print(root->left);
+		cout << ") | (";
+		Re_print(root->right);
+		cout << ")";
+		break;
+	}
+	case CONCAT:
+	{
+		cout << "(";
+		Re_print(root->left);
+		cout << ")(";
+		Re_print(root->right);
+		cout << ")";
+		break;
+	}
+	case CLOSURE:{
+		 cout << "(";
+		 Re_print(root->left);
+		 printf(")*");
+		 break;
+	}
+	default:
+		break;
+	}
+	return;
 }
