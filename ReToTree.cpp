@@ -1,5 +1,5 @@
 #include "Tree.h"
-
+#include <iostream>
 using namespace std;
 
 Tree::Tree(string s)
@@ -8,7 +8,8 @@ Tree::Tree(string s)
 	root = nullptr;
 	pos = 0;
 	currentChar = '\0';
-	ReToTree();
+	Tree::ReToTree();
+	Tree::Re_print(root);
 }
 char Tree::getNextChar()
 {
@@ -18,6 +19,8 @@ char Tree::getNextChar()
 TreeNode* Tree::ReToTree()
 {
 	root=Tree::parse_Exp();
+	
+	return root;
 }
 TreeNode* Tree::parse_Exp()
 {
@@ -64,6 +67,7 @@ TreeNode* Tree::parse_C()
 		TreeNode* l = parse_Exp();
 		getNextChar();
 		currentChar = getNextChar();
+		return l;
 	}
 	if (isalpha(currentChar))
 	{
@@ -71,4 +75,40 @@ TreeNode* Tree::parse_C()
 		currentChar = getNextChar();
 		return leaf;
 	}
+	return nullptr;
+}
+void Tree::Re_print (TreeNode* root)
+{
+ 
+  switch (root->nodeKind){
+  case CHAR:{
+    cout<<root->c;
+    break;
+  }
+  case ALT:{
+    cout<<"(";
+    Re_print (root->left);
+    cout<<") | (";
+    Re_print (root->right);
+    cout<<")";
+    break;
+  }
+  case CONCAT:{
+    cout<<"(";
+    Re_print (root->left);
+    cout<<")(";
+    Re_print (root->right);
+	cout<<")";
+    break;
+  }
+  case CLOSURE:{
+    cout<<"(";
+    Re_print (root->left);
+    printf (")*");
+    break;
+  }
+  default:
+    break;
+  }
+  return;
 }
