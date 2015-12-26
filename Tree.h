@@ -1,3 +1,6 @@
+#ifndef TREE_H
+#define	TREE_H
+
 #include "TreeNode.h"
 #include <iostream>
 using namespace std;
@@ -20,4 +23,4 @@ public:
 	Tree(string);
 	
 };
-
+#endif
