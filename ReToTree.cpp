@@ -30,60 +30,60 @@ TreeNode* Tree::ReToTree()
 }
 TreeNode* Tree::parse_Exp()
 {	
-	TreeNode* l = parse_A();
+	TreeNode* left = parse_A();
 	if (currentChar == '\0')
 	{
-		return l;
+		return left;
 	}
 	while (currentChar == '|')
 	{
 		currentChar = getNextChar();		
-		TreeNode* r = parse_A();
-		TreeNode* alt = new TreeNode(ALT, '|', l, r);
-		l = alt;
+		TreeNode* right = parse_A();
+		TreeNode* alt = new TreeNode(ALT, '|', left, right);
+		left = alt;
 	}
-	return l;
+	return left;
 }
 TreeNode* Tree::parse_A()
 {
-	TreeNode* l = parse_B();
+	TreeNode* left = parse_B();
 	if (currentChar == '\0')
 	{
-		return l;
+		return left;
 	}
 	while (isalpha(currentChar)||((currentChar=='(')&&isalpha(getBackChar())))
 	{	
-		TreeNode* r = parse_B();
-		TreeNode* Concat = new TreeNode(CONCAT, '.', l, r);
-		l = Concat;		
+		TreeNode* right = parse_B();
+		TreeNode* Concat = new TreeNode(CONCAT, '.', left, right);
+		left = Concat;		
 	}
-	return l;
+	return left;
 }
 TreeNode* Tree::parse_B()
 {
-	TreeNode* l = parse_C();
+	TreeNode* left = parse_C();
 	if (currentChar == '\0')
 	{
-		return l;
+		return left;
 	}
 	while(currentChar == '*')
 	{
 		currentChar = getNextChar();
-		TreeNode* Clo = new TreeNode(CLOSURE, '*', l, nullptr);
+		TreeNode* Clo = new TreeNode(CLOSURE, '*', left, nullptr);
 		
-		l = Clo;
+		left = Clo;
 	}
-	return l;
+	return left;
 }
 TreeNode* Tree::parse_C()
 {
-	TreeNode* l = nullptr;
+	TreeNode* left = nullptr;
 	if (currentChar=='(')
 	{
 		currentChar = getNextChar();		
-		l = parse_Exp();
+		left = parse_Exp();
 		currentChar = getNextChar();	
-		return l;
+		return left;
 	}
 	if (isalpha(currentChar))
 	{
