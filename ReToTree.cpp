@@ -1,9 +1,11 @@
 #include "Tree.h"
 #include <iostream>
-using namespace std;
-
+#include "Nfa.h"
+using std::string;
+using std::cout;
 Tree::Tree(string s)
 {
+	
 	exp = s;
 	root = nullptr;
 	pos = 0;
@@ -30,60 +32,60 @@ TreeNode* Tree::ReToTree()
 }
 TreeNode* Tree::parse_Exp()
 {	
-	TreeNode* left = parse_A();
+	TreeNode* l = parse_A();
 	if (currentChar == '\0')
 	{
-		return left;
+		return l;
 	}
 	while (currentChar == '|')
 	{
 		currentChar = getNextChar();		
-		TreeNode* right = parse_A();
-		TreeNode* alt = new TreeNode(ALT, '|', left, right);
-		left = alt;
+		TreeNode* r = parse_A();
+		TreeNode* alt = new TreeNode(ALT, '|', l, r);
+		l = alt;
 	}
-	return left;
+	return l;
 }
 TreeNode* Tree::parse_A()
 {
-	TreeNode* left = parse_B();
+	TreeNode* l = parse_B();
 	if (currentChar == '\0')
 	{
-		return left;
+		return l;
 	}
 	while (isalpha(currentChar)||((currentChar=='(')&&isalpha(getBackChar())))
 	{	
-		TreeNode* right = parse_B();
-		TreeNode* Concat = new TreeNode(CONCAT, '.', left, right);
-		left = Concat;		
+			TreeNode* r = parse_B();
+			TreeNode* Concat = new TreeNode(CONCAT, '.', l, r);
+			l = Concat;		
 	}
-	return left;
+	return l;
 }
 TreeNode* Tree::parse_B()
 {
-	TreeNode* left = parse_C();
+	TreeNode* l = parse_C();
 	if (currentChar == '\0')
 	{
-		return left;
+		return l;
 	}
 	while(currentChar == '*')
 	{
 		currentChar = getNextChar();
-		TreeNode* Clo = new TreeNode(CLOSURE, '*', left, nullptr);
+		TreeNode* Clo = new TreeNode(CLOSURE, '*', l, nullptr);
 		
-		left = Clo;
+		l = Clo;
 	}
-	return left;
+	return l;
 }
 TreeNode* Tree::parse_C()
 {
-	TreeNode* left = nullptr;
+	TreeNode* l = nullptr;
 	if (currentChar=='(')
 	{
 		currentChar = getNextChar();		
-		left = parse_Exp();
+		l = parse_Exp();
 		currentChar = getNextChar();	
-		return left;
+		return l;
 	}
 	if (isalpha(currentChar))
 	{
@@ -131,4 +133,28 @@ void Tree::Re_print (TreeNode* root)
 		break;
 	}
 	return;
+}
+
+
+NfaNode *treeToNfa(TreeNode *root, Nfa &nfa)
+{
+	switch (root->nodeKind)
+	{
+	case CONCAT:
+	{
+		NfaNode *oldStart = nfa.start;
+		NfaNode *oldAccept = nfa.accept;
+		treeToNfa(root->left, nfa);
+	    treeToNfa(root->right, nfa);
+	    nfa.nfaAddEdge(oldAccept, nfa.start, Eps);
+	    nfa.start = oldStart;
+	}
+	case CHAR:
+	{
+
+		NfaNode *
+	}
+
+	}
+
 }
