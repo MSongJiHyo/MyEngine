@@ -136,24 +136,62 @@ void Tree::Re_print (TreeNode* root)
 }
 
 
-NfaNode *treeToNfa(TreeNode *root, Nfa &nfa)
+void treeToNfa(TreeNode *currentNode, Nfa &nfa)
 {
-	switch (root->nodeKind)
+	switch (currentNode->nodeKind)
 	{
 	case CONCAT:
 	{
 		NfaNode *oldStart = nfa.start;
 		NfaNode *oldAccept = nfa.accept;
-		treeToNfa(root->left, nfa);
-	    treeToNfa(root->right, nfa);
+		treeToNfa(currentNode->left, nfa);
+	    treeToNfa(currentNode->right, nfa);
 	    nfa.nfaAddEdge(oldAccept, nfa.start, Eps);
 	    nfa.start = oldStart;
+		break;
 	}
 	case CHAR:
 	{
-
-		NfaNode *
+		NfaNode *start=nfa.addNode();
+		NfaNode *accept = nfa.addNode();
+		nfa.nfaAddEdge(start, accept, currentNode->c);
+		nfa.start = start;
+		nfa.accept = accept;
+		break;
 	}
+	case ALT:
+	{
+		treeToNfa(currentNode->left, nfa);
+		NfaNode *start = nfa.addNode();
+		NfaNode *accept = nfa.addNode();
+		NfaNode *oldStart = nfa.start;
+		NfaNode *oldAccept = nfa.accept;
+		nfa.nfaAddEdge(start, oldStart, Eps);
+		nfa.nfaAddEdge(oldAccept, accept, Eps);
+		treeToNfa(currentNode->right, nfa);
+		nfa.nfaAddEdge(start, nfa.start, Eps);
+		nfa.nfaAddEdge(nfa.accept, accept, Eps);
+		nfa.start = start;
+		nfa.accept = accept;
+		break;
+
+	}
+	case CLOSURE:
+	{
+		NfaNode *start = nfa.addNode();
+		NfaNode *accept = nfa.addNode();
+		treeToNfa(currentNode->left, nfa);
+		NfaNode *oldStart = nfa.start;
+		NfaNode *oldAccept = nfa.accept;
+		nfa.nfaAddEdge(start, oldStart, Eps);
+		nfa.nfaAddEdge(oldAccept, accept, Eps);
+		nfa.nfaAddEdge(nfa.accept, nfa.start, Eps);
+		nfa.start = start;
+		nfa.accept = accept;
+
+	}
+	default:
+		break;
 
 	}
 
